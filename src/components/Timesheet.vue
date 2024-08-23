@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { DayType } from '@/model/DayType';
+  import { DayType } from '@/model/dayType';
+  import { Day, Timesheet, Location } from '@/model/model';
 
   export default {
     data() {
@@ -10,16 +11,11 @@
             ['CLANDAY', 'Clanday'],
             ['SICK', 'Ziek'],
         ]),
-        locations: {
-          HOME: { icon: '🏠', title: 'Thuis' },
-          ARNHEM: { icon: '🏢', title: 'Arnhem' },
-          DUIVEN: { icon: '🐦', title: 'Duiven' }
-        },
+        locations: {} as {[key: string]: Location},
         timesheet: {
-          types: [] as DayType[],
-          locations: [] as (string | undefined)[],
+          days: [],
           monthDisplay: ''
-        },
+        } as Timesheet,
         mousedown: false
       }
     },
@@ -28,10 +24,13 @@
         fetch("api/timesheet")
             .then(response => response.json())
             .then(data => {
-              const locs = Object.keys(this.locations);
+              // const locs = Object.keys(this.locations);
               this.timesheet = data;
-              this.timesheet.locations = data.types.map(t => this.isOffice(t) ? locs[Math.floor(Math.random() * locs.length)] : undefined)
+              // this.timesheet.locations = data.types.map(t => this.isOffice(t) ? locs[Math.floor(Math.random() * locs.length)] : undefined)
             });
+        fetch("api/locations")
+            .then(response => response.json())
+            .then(data => this.locations = data)
       },
       isSelectable(type: DayType) {
         return !['HOLIDAY', 'WEEKEND'].includes(type);
@@ -40,21 +39,22 @@
         return ['WORK', 'CLANDAY'].includes(type);
       },
       select(type: DayType, index: number) {
-        if (this.isSelectable(this.timesheet.types[index])) {
-          this.timesheet.types[index] = type;
+        if (this.isSelectable(this.timesheet.days[index])) {
+          const day = this.timesheet.days[index];
+          day.type = type;
           if (!this.isOffice(type)) {
-            this.timesheet.locations[index] = undefined;
+            day.location = undefined;
           }
         }
       },
       selectLocation(type: string, index: number) {
-        this.timesheet.locations[index] = type;
+        this.timesheet.days[index].location = type;
       },
       count(type: DayType) {
-        return this.timesheet.types.filter(t => t === type).length;
+        return this.timesheet.days.filter(day => day.type === type).length;
       },
       countLocations(location: string) {
-        return this.timesheet.locations.filter(t => t === location).length;
+        return this.timesheet.days.filter(day => day.location === location).length;
       },
       submit() {
 
@@ -81,23 +81,23 @@
 
     <!-- Timesheet -->
     <div class="days">
-      <div v-for="(type, index) in timesheet.types" :key="type"
+      <div v-for="(day, index) in timesheet.days" :key="index"
            class="column"
-           :class="{'not-selectable': !isSelectable(type)}">
+           :class="{'not-selectable': !isSelectable(day)}">
         <div>{{index + 1}}</div>
 
         <div v-for="[dayType] in daytypes" :key="dayType"
              class="daytype"
-             :class="{ active: type === dayType }"
+             :class="{ active: day.type === dayType }"
              v-on:mousedown="select(dayType, index)"
              v-on:mouseover="mousedown ? select(dayType, index) : {}">&nbsp;</div>
 
         <div class="location">&nbsp;</div>
 
         <template v-for="(location, key) in locations" :key="key">
-          <div v-if="isOffice(type)"
+          <div v-if="isOffice(day.type)"
                v-on:click="selectLocation(key, index)"
-               :class="{ active: timesheet.locations[index] === key }"
+               :class="{ active: timesheet.days[index].location === key }"
                class="daytype">{{ location.icon }}</div>
           <div v-else class="not-selectable">&nbsp;</div>
         </template>
