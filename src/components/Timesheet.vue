@@ -1,8 +1,12 @@
 <script lang="ts">
-  import { DayType } from '@/model/dayType';
-  import { Day, Timesheet, Location } from '@/model/model';
+  import { PropType } from 'vue';
+  import { DayType, ConfiguredTimesheet, Day, Locations } from '@/model/model';
 
   export default {
+    props: {
+      timesheet: Object as PropType<ConfiguredTimesheet>,
+      locations: Object as PropType<Locations>
+    },
     data() {
       return {
         daytypes: new Map<DayType, string>([
@@ -11,36 +15,19 @@
             ['CLANDAY', 'Clanday'],
             ['SICK', 'Ziek'],
         ]),
-        locations: {} as {[key: string]: Location},
-        timesheet: {
-          days: [],
-          monthDisplay: ''
-        } as Timesheet,
         mousedown: false
       }
     },
     methods: {
-      async getData() {
-        fetch("api/timesheet")
-            .then(response => response.json())
-            .then(data => {
-              // const locs = Object.keys(this.locations);
-              this.timesheet = data;
-              // this.timesheet.locations = data.types.map(t => this.isOffice(t) ? locs[Math.floor(Math.random() * locs.length)] : undefined)
-            });
-        fetch("api/locations")
-            .then(response => response.json())
-            .then(data => this.locations = data)
-      },
-      isSelectable(type: DayType) {
-        return !['HOLIDAY', 'WEEKEND'].includes(type);
+      isSelectable(day: Day) {
+        return !['HOLIDAY', 'WEEKEND'].includes(day.type);
       },
       isOffice(type: DayType) {
         return ['WORK', 'CLANDAY'].includes(type);
       },
       select(type: DayType, index: number) {
-        if (this.isSelectable(this.timesheet.days[index])) {
-          const day = this.timesheet.days[index];
+        if (this.isSelectable(this.timesheet!.days[index])) {
+          const day = this.timesheet!.days[index];
           day.type = type;
           if (!this.isOffice(type)) {
             day.location = undefined;
@@ -48,20 +35,16 @@
         }
       },
       selectLocation(type: string, index: number) {
-        this.timesheet.days[index].location = type;
+        this.timesheet!.days[index].location = type;
       },
       count(type: DayType) {
-        return this.timesheet.days.filter(day => day.type === type).length;
+        return this.timesheet!.days.filter(day => day.type === type).length;
       },
       countLocations(location: string) {
-        return this.timesheet.days.filter(day => day.location === location).length;
-      },
-      submit() {
-
+        return this.timesheet!.days.filter(day => day.location === location).length;
       }
     },
     mounted() {
-      this.getData();
       document.addEventListener("mousedown", () => this.mousedown = true);
       document.addEventListener("mouseup", () => this.mousedown = false);
     }
@@ -69,7 +52,6 @@
 </script>
 
 <template>
-  <h1>{{timesheet.monthDisplay}}</h1>
   <div class="timesheet">
     <!-- Title column -->
     <div class="column">
@@ -81,7 +63,7 @@
 
     <!-- Timesheet -->
     <div class="days">
-      <div v-for="(day, index) in timesheet.days" :key="index"
+      <div v-for="(day, index) in timesheet!.days" :key="index"
            class="column"
            :class="{'not-selectable': !isSelectable(day)}">
         <div>{{index + 1}}</div>
@@ -97,7 +79,7 @@
         <template v-for="(location, key) in locations" :key="key">
           <div v-if="isOffice(day.type)"
                v-on:click="selectLocation(key, index)"
-               :class="{ active: timesheet.days[index].location === key }"
+               :class="{ active: timesheet!.days[index].location === key }"
                class="daytype">{{ location.icon }}</div>
           <div v-else class="not-selectable">&nbsp;</div>
         </template>
@@ -112,16 +94,9 @@
       <div v-for="(_, key) in locations" :key="key">{{ countLocations(key) }}</div>
     </div>
   </div>
-
-  <v-btn v-on:click="submit()" class="mt-6"  variant="outlined">
-    Submit
-  </v-btn>
 </template>
 
 <style scoped>
-  h1 {
-    margin: 12px;
-  }
   .timesheet {
     display: grid;
     grid-row-gap: 16px;

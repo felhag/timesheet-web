@@ -5,7 +5,7 @@ export type Day = {
   location?: string;
 }
 
-export interface Timesheet {
+export interface ConfiguredTimesheet {
   days: Day[],
   monthDisplay: string
 }
@@ -13,4 +13,7 @@ export interface Timesheet {
 export interface Location {
   title: string;
   icon: string;
+  km: number;
 }
+
+export type Locations = {[key: string]: Location};

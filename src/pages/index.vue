@@ -1,5 +1,5 @@
 <template>
-  <Timesheet />
+  <Page />
 </template>
 
 <script lang="ts" setup>
