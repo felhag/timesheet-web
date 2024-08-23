@@ -6,8 +6,9 @@ export type Day = {
 }
 
 export interface ConfiguredTimesheet {
-  days: Day[],
-  monthDisplay: string
+  days: Day[];
+  month: string;
+  monthDisplay: string;
 }
 
 export interface Location {

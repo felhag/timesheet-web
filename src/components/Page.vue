@@ -11,18 +11,31 @@ export default {
       locations: {} as Locations,
       timesheet: {
         days: [],
+        month: '',
         monthDisplay: ''
       } as ConfiguredTimesheet,
     }
   },
   methods: {
     getData: async function () {
-      fetch("api/timesheet")
-          .then(response => response.json())
-          .then(data => this.timesheet = data);
-      fetch("api/locations")
-          .then(response => response.json())
-          .then(data => this.locations = data)
+      fetch("api/timesheet").then(response => response.json()).then(data => this.timesheet = data);
+      fetch("api/locations").then(response => response.json()).then(data => this.locations = data);
+    },
+    back() {
+      if (this.page === 'result') {
+        this.page = 'configure';
+      } else {
+        this.swapMonth(-1);
+      }
+    },
+    next() {
+      this.swapMonth(1);
+    },
+    swapMonth(dir: 1 | -1) {
+      const [month, year] = this.timesheet!.month.split('-').map(i => parseInt(i));
+      const nextMonth = month + dir;
+      const next = nextMonth >= 1 && nextMonth <= 12 ? [nextMonth, year] : [nextMonth === 0 ? 12 : 1, year + dir];
+      fetch(`api/timesheet/${next[0]}-${next[1]}`).then(response => response.json()).then(data => this.timesheet = data);
     },
     submit() {
       this.page = 'result';
@@ -37,12 +50,15 @@ export default {
 <template>
   <h1>
     <v-btn
-        v-if="page === 'result'"
-        v-on:click="page = 'configure'"
+        v-on:click="back()"
         icon="mdi-chevron-left"
-        variant="text"
-    ></v-btn>
-    {{ timesheet.monthDisplay }}
+        variant="text"></v-btn>
+    <span class="month-name"> {{ timesheet.monthDisplay }} </span>
+    <v-btn
+        v-if="page === 'configure'"
+        v-on:click="next()"
+        icon="mdi-chevron-right"
+        variant="text"></v-btn>
   </h1>
 
   <div v-if="page === 'configure'">
@@ -62,5 +78,10 @@ export default {
 <style scoped>
   h1 {
     margin: 12px 0;
+  }
+  .month-name {
+    min-width: 250px;
+    display: inline-block;
+    text-align: center;
   }
 </style>
