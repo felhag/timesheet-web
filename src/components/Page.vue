@@ -43,6 +43,9 @@ export default {
   },
   mounted() {
     this.getData();
+  },
+  created () {
+    document.title = "Codeclan Timesheet";
   }
 }
 </script>
