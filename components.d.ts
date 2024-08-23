@@ -9,8 +9,8 @@ declare module 'vue' {
   export interface GlobalComponents {
     Page: typeof import('./src/components/Page.vue')['default']
     Result: typeof import('./src/components/Result.vue')['default']
-    Timesheet: typeof import('./src/components/Timesheet.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Timesheet: typeof import('./src/components/Timesheet.vue')['default']
   }
 }

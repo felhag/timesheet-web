@@ -35,7 +35,15 @@ export default {
 </script>
 
 <template>
-  <h1>{{ timesheet.monthDisplay }}</h1>
+  <h1>
+    <v-btn
+        v-if="page === 'result'"
+        v-on:click="page = 'configure'"
+        icon="mdi-chevron-left"
+        variant="text"
+    ></v-btn>
+    {{ timesheet.monthDisplay }}
+  </h1>
 
   <div v-if="page === 'configure'">
     <Timesheet :timesheet="timesheet"
@@ -53,6 +61,6 @@ export default {
 
 <style scoped>
   h1 {
-    margin: 12px;
+    margin: 12px 0;
   }
 </style>
