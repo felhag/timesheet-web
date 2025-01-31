@@ -10,10 +10,10 @@
     data() {
       return {
         daytypes: new Map<DayType, string>([
-            ['WORK', 'Klant'],
-            ['LEAVE', 'Verlof'],
-            ['CLANDAY', 'Clanday'],
-            ['SICK', 'Ziek'],
+          ['WORK', 'Klant'],
+          ['CLANDAY', 'Clanday'],
+          ['LEAVE', 'Verlof'],
+          ['SICK', 'Ziek'],
         ]),
         mousedown: false
       }
@@ -34,13 +34,13 @@
           }
         }
       },
-      selectLocation(type: string, index: number) {
+      selectLocation(type: number, index: number) {
         this.timesheet!.days[index].location = type;
       },
       count(type: DayType) {
         return this.timesheet!.days.filter(day => day.type === type).length;
       },
-      countLocations(location: string) {
+      countLocations(location: number) {
         return this.timesheet!.days.filter(day => day.location === location).length;
       }
     },
@@ -58,7 +58,7 @@
       <div class="font-weight-bold">Dagen</div>
       <div v-for="[type, display] in daytypes" :key="type">{{ display }}</div>
       <div class="location font-weight-bold">Locatie</div>
-      <div v-for="(location) in locations" :key="location.title">{{ location.title }}</div>
+      <div v-for="(location) in locations" :key="location.name">{{ location.name }}</div>
     </div>
 
     <!-- Timesheet -->
@@ -80,7 +80,7 @@
           <div v-if="isOffice(day.type)"
                v-on:click="selectLocation(key, index)"
                :class="{ active: timesheet!.days[index].location === key }"
-               class="daytype">{{ location.icon }}</div>
+               class="daytype">&nbsp;</div>
           <div v-else class="not-selectable">&nbsp;</div>
         </template>
       </div>

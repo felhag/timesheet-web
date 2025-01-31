@@ -2,7 +2,7 @@ export type DayType = 'WORK' |'CLANDAY' |'WEEKEND' |'HOLIDAY' |'LEAVE' | 'SICK';
 
 export type Day = {
   type: DayType;
-  location?: string;
+  location?: number;
 }
 
 export interface ConfiguredTimesheet {
@@ -12,9 +12,9 @@ export interface ConfiguredTimesheet {
 }
 
 export interface Location {
-  title: string;
-  icon: string;
+  id: number;
+  name: string;
   km: number;
 }
 
-export type Locations = {[key: string]: Location};
+export type Locations = {[key: number]: Location};
