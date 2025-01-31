@@ -1,8 +1,10 @@
 <script lang="ts">
   import { PropType } from 'vue';
   import { DayType, ConfiguredTimesheet, Day, Locations } from '@/model/model';
+  import AddLocation from "@/components/AddLocation.vue";
 
   export default {
+    components: {AddLocation},
     props: {
       timesheet: Object as PropType<ConfiguredTimesheet>,
       locations: Object as PropType<Locations>
@@ -59,6 +61,9 @@
       <div v-for="[type, display] in daytypes" :key="type">{{ display }}</div>
       <div class="location font-weight-bold">Locatie</div>
       <div v-for="(location) in locations" :key="location.name">{{ location.name }}</div>
+      <div>
+        <AddLocation @location="locations![$event.id] = $event"></AddLocation>
+      </div>
     </div>
 
     <!-- Timesheet -->
