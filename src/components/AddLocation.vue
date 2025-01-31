@@ -1,30 +1,37 @@
 <script lang="ts">
 
-export type VForm = { validate: () => boolean }
+export type VForm = { validate: () => Promise<{valid: boolean}> }
 
 export default {
   data() {
     return {
       open: false,
+      error: '',
+      nameRules: [(v: string) => !!v || 'Naam is verplicht'],
       location: {
         name: ''
       }
     }
   },
   methods: {
-    saveLocation() {
-      this.form.validate();
-      const requestOptions = {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(this.$data.location)
-      };
-      fetch("api/location", requestOptions)
-          .then(response => response.json())
-          .then(json => {
-            this.open = false;
-            this.$emit('location', json)
-          });
+    async saveLocation() {
+      const valid = await this.form.validate();
+      if (valid.valid) {
+        const requestOptions = {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(this.$data.location)
+        };
+        fetch("api/location", requestOptions)
+            .then(async response => {
+              if (response.ok) {
+                this.open = false;
+                this.$emit('location', await response.json())
+              } else {
+                this.error = response.statusText
+              }
+            });
+      }
     },
   },
   computed: {
@@ -46,7 +53,15 @@ export default {
     <v-card title="Locatie toevoegen">
       <v-form ref="form" @submit.prevent="saveLocation">
         <v-card-text>
-          <v-text-field v-model="location.name" label="Naam"></v-text-field>
+          <v-alert
+              v-if="error"
+              :text="error"
+              title="Failed to save location"
+              type="error"
+          ></v-alert>
+          <v-text-field v-model="location.name"
+                        :rules="nameRules"
+                        label="Naam"></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-btn text="Annuleren" variant="plain" @click="open = false"></v-btn>
