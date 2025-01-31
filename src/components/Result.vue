@@ -19,7 +19,7 @@ export default {
         this.download('reiskosten');
       },
       download(endpoint: string) {
-        fetch(`api/${endpoint}`, {
+        fetch(`api/excel/${endpoint}`, {
           method: 'post',
           headers: {
             'Accept': 'application/json',

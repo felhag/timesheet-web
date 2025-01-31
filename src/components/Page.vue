@@ -39,7 +39,14 @@ export default {
       fetch(`api/timesheet/${next[0]}-${next[1]}`).then(response => response.json()).then(data => this.timesheet = data);
     },
     submit() {
-      this.page = 'result';
+      fetch(`api/timesheet`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(this.timesheet)
+      }).then(() => this.page = 'result')
     }
   },
   mounted() {
