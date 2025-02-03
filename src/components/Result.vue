@@ -1,11 +1,11 @@
 <script lang="ts">
-import { ConfiguredTimesheet, Locations } from '@/model/model';
+import { ConfiguredTimesheet, Location } from '@/model/model';
 import { PropType } from 'vue';
 
 export default {
     props: {
       timesheet: Object as PropType<ConfiguredTimesheet>,
-      locations: Object as PropType<Locations>
+      locations: Object as PropType<Location[]>
     },
     data() {
       return {
@@ -40,13 +40,14 @@ export default {
             })
       },
       thuiswerkdagen() {
-        return this.timesheet!.days.filter(day => day.location === 'HOME').length;
+        const home = this.locations!.find(loc => loc.name === 'Thuis')!.id;
+        return this.timesheet!.days.filter(day => day.location === home).length;
       },
       kilometers() {
         return this.timesheet!.days
-            .map(day => day.location)
-            .filter(loc => loc && loc !== 'HOME')
-            .map(loc => this.locations![loc!].km)
+            .map(day => this.locations!.find(loc => loc.id === day.location!)!)
+            .filter(loc => loc && loc.name !== 'Thuis')
+            .map(loc => loc.distance)
             .reduce((sum, a) => sum + a, 0);
       },
       currency (num: any) {

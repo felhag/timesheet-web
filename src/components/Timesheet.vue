@@ -1,13 +1,13 @@
 <script lang="ts">
   import { PropType } from 'vue';
-  import { DayType, ConfiguredTimesheet, Day, Locations } from '@/model/model';
+  import { DayType, ConfiguredTimesheet, Day, Location } from '@/model/model';
   import AddLocation from "@/components/AddLocation.vue";
 
   export default {
     components: {AddLocation},
     props: {
       timesheet: Object as PropType<ConfiguredTimesheet>,
-      locations: Object as PropType<Locations>
+      locations: Object as PropType<Location[]>
     },
     data() {
       return {
@@ -60,9 +60,9 @@
       <div class="font-weight-bold">Dagen</div>
       <div v-for="[type, display] in daytypes" :key="type">{{ display }}</div>
       <div class="location font-weight-bold">Locatie</div>
-      <div v-for="(location) in locations" :key="location.name">{{ location.name }}</div>
+      <div v-for="location in locations" :key="location.name">{{ location.name }}</div>
       <div>
-        <AddLocation @location="locations![$event.id] = $event"></AddLocation>
+        <AddLocation @location="locations!.push($event)"></AddLocation>
       </div>
     </div>
 
@@ -81,10 +81,10 @@
 
         <div class="location">&nbsp;</div>
 
-        <template v-for="(location, key) in locations" :key="key">
+        <template v-for="location in locations" :key="location.id">
           <div v-if="isOffice(day.type)"
-               v-on:click="selectLocation(key, index)"
-               :class="{ active: timesheet!.days[index].location === key }"
+               v-on:click="selectLocation(location.id, index)"
+               :class="{ active: timesheet!.days[index].location == location.id }"
                class="daytype">&nbsp;</div>
           <div v-else class="not-selectable">&nbsp;</div>
         </template>
@@ -96,7 +96,7 @@
       <div>Totaal</div>
       <div v-for="[dayType] in daytypes" :key="dayType">{{ count(dayType) }}</div>
       <div class="location">&nbsp;</div>
-      <div v-for="(_, key) in locations" :key="key">{{ countLocations(key) }}</div>
+      <div v-for="location in locations" :key="location.id">{{ countLocations(location.id) }}</div>
     </div>
   </div>
 </template>

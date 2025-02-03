@@ -8,8 +8,10 @@ export default {
       open: false,
       error: '',
       nameRules: [(v: string) => !!v || 'Naam is verplicht'],
+      distanceRules: [(v: string) => !!v || 'Afstand is verplicht'],
       location: {
-        name: ''
+        name: '',
+        distance: null
       }
     }
   },
@@ -62,6 +64,13 @@ export default {
           <v-text-field v-model="location.name"
                         :rules="nameRules"
                         label="Naam"></v-text-field>
+          <v-number-input v-model="location.distance"
+                          label="Afstand"
+                          :rules="distanceRules"
+          ></v-number-input>
+          <v-text-field v-model="location.distance"
+                        :rules="distanceRules"
+                        label="Afstand"></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-btn text="Annuleren" variant="plain" @click="open = false"></v-btn>

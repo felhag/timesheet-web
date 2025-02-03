@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ConfiguredTimesheet, Locations, Location } from '@/model/model';
+import { ConfiguredTimesheet, Location } from '@/model/model';
 import Timesheet from '@/components/Timesheet.vue';
 import Result from '@/components/Result.vue';
 
@@ -8,7 +8,7 @@ export default {
   data() {
     return {
       page: 'configure' as 'configure' | 'result',
-      locations: {} as Locations,
+      locations: [] as Location[],
       timesheet: {
         days: [],
         month: '',
@@ -19,8 +19,7 @@ export default {
   methods: {
     getData: async function () {
       fetch("api/timesheet").then(response => response.json()).then(data => this.timesheet = data);
-      fetch("api/location").then(response => response.json()).then(data =>
-        this.locations = Object.fromEntries(data.map((d: Location) => [d.id, d])));
+      fetch("api/location").then(response => response.json()).then(data => this.locations = data);
     },
     back() {
       if (this.page === 'result') {

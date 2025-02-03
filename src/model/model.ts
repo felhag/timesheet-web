@@ -14,7 +14,5 @@ export interface ConfiguredTimesheet {
 export interface Location {
   id: number;
   name: string;
-  km: number;
+  distance: number;
 }
-
-export type Locations = {[key: number]: Location};
