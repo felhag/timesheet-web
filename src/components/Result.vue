@@ -83,7 +83,7 @@ export default {
   <div>
     <h3>Thuiswerkvergoeding</h3>
     <div>
-      Thuiswerkvergoeding {{timesheet!.monthDisplay}} ({{thuiswerkdagen()}} dagen * €2,35): {{ currency(thuiswerkdagen() * 2.35) }}
+      Thuiswerkvergoeding {{timesheet!.monthDisplay}} ({{thuiswerkdagen()}} dagen * €2,40): {{ currency(thuiswerkdagen() * 2.4) }}
       <v-btn v-on:click="copy($event)" icon="mdi-content-copy"></v-btn>
     </div>
   </div>
