@@ -1,6 +1,12 @@
 <script lang="ts">
 
-export type VForm = { validate: () => Promise<{valid: boolean}> }
+import { PropType } from "vue";
+import { HOME, Location } from "@/model/model";
+
+export type VForm = {
+  validate: () => Promise<{valid: boolean}> ,
+  reset: () => void
+}
 export interface Address {
   addresstype: string;
   display_name: string;
@@ -10,6 +16,9 @@ export interface Address {
 }
 
 export default {
+  props: {
+    locations: Object as PropType<Location[]>
+  },
   data() {
     return {
       open: false,
@@ -75,16 +84,29 @@ export default {
         return (this.location.distance ?? 0) * 2;
       },
       set(value: string) {},
+    },
+    home() {
+      return this.locations?.find(loc => loc.name === HOME);
     }
   },
   watch: {
+    open(open: boolean) {
+      if (!open) {
+        this.form.reset();
+        this.error = '';
+      }
+    },
     address(val: Address) {
-      this.location.lat = parseFloat(val.lat);
-      this.location.lon = parseFloat(val.lon);
-      fetch(`https://routing.openstreetmap.de/routed-car/route/v1/driving/5.2357783,51.7147899;${val.lon},${val.lat}`).then(async places => {
-        const response = await places.json();
-        this.location.distance = Math.ceil(response.routes[0].distance / 1000);
-      });
+      if (val) {
+        this.location.lat = parseFloat(val.lat);
+        this.location.lon = parseFloat(val.lon);
+        if (this.home) {
+          fetch(`https://routing.openstreetmap.de/routed-car/route/v1/driving/${this.home.lon},${this.home.lat};${val.lon},${val.lat}`).then(async places => {
+            const response = await places.json();
+            this.location.distance = Math.ceil(response.routes[0].distance / 1000);
+          });
+        }
+      }
     },
     addressSearch() {
       clearTimeout(this.addressTimer);
@@ -147,7 +169,7 @@ export default {
               ></v-text-field>
             </v-col>
           </v-row>
-          <v-row dense>
+          <v-row v-if="home" dense>
             <v-text-field v-model="location.distance"
                           label="Afstand"
                           suffix="km"

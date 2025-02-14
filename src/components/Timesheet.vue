@@ -61,8 +61,9 @@
       <div v-for="[type, display] in daytypes" :key="type">{{ display }}</div>
       <div class="location font-weight-bold">Locatie</div>
       <div v-for="location in locations" :key="location.name">{{ location.name }}</div>
+      <em v-if="!locations?.length">Geen locaties</em>
       <div>
-        <AddLocation @location="locations!.push($event)"></AddLocation>
+        <AddLocation :locations="locations" @location="locations!.push($event)"></AddLocation>
       </div>
     </div>
 
@@ -83,9 +84,10 @@
 
         <template v-for="location in locations" :key="location.id">
           <div v-if="isOffice(day.type)"
-               v-on:click="selectLocation(location.id, index)"
                :class="{ active: timesheet!.days[index].location == location.id }"
-               class="daytype">&nbsp;</div>
+               class="daytype"
+               v-on:mousedown="selectLocation(location.id, index)"
+               v-on:mouseover="mousedown ? selectLocation(location.id, index) : {}">&nbsp;</div>
           <div v-else class="not-selectable">&nbsp;</div>
         </template>
       </div>
