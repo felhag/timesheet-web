@@ -1,5 +1,5 @@
 export type DayType = 'WORK' |'CLANDAY' |'WEEKEND' |'HOLIDAY' |'LEAVE' | 'SICK';
-
+export type DEFAULT_DAY = 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY';
 export const HOME = 'Thuis';
 
 export type Day = {
@@ -14,9 +14,10 @@ export interface ConfiguredTimesheet {
 }
 
 export interface Location {
-  id: number;
+  id?: number;
   name: string;
-  distance: number;
+  distance?: number;
   lat: number;
   lon: number;
+  defaultDays: DEFAULT_DAY[];
 }

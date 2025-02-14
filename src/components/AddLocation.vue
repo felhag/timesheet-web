@@ -1,7 +1,7 @@
 <script lang="ts">
 
 import { PropType } from "vue";
-import { HOME, Location } from "@/model/model";
+import { DEFAULT_DAY, HOME, Location } from "@/model/model";
 
 export type VForm = {
   validate: () => Promise<{valid: boolean}> ,
@@ -28,15 +28,17 @@ export default {
       location: {
         name: '',
         address: '',
-        distance: null as number | null,
+        distance: undefined,
+        defaultDays: [],
         lat: 0,
         lon: 0
-      },
+      } as Location,
       addressTimer: -1,
       addressSearch: '',
       addresses: [] as Address[],
       address: undefined as Address | undefined,
-      addressLoading: false
+      addressLoading: false,
+      days: {ma: 'MONDAY', di: 'TUESDAY', wo: 'WEDNESDAY', do: 'THURSDAY', vr: 'FRIDAY'} as {[key: string] : DEFAULT_DAY}
     }
   },
   methods: {
@@ -74,6 +76,16 @@ export default {
         this.addressLoading = false;
       });
     },
+
+    toggleDay(day: DEFAULT_DAY) {
+      const days = this.location.defaultDays;
+      const idx = days.indexOf(day);
+      if (idx >= 0) {
+        days.splice(idx, 1);
+      } else {
+        days.push(day);
+      }
+    }
   },
   computed: {
     form(): VForm {
@@ -94,6 +106,7 @@ export default {
       if (!open) {
         this.form.reset();
         this.error = '';
+        this.location.defaultDays = [];
       }
     },
     address(val: Address) {
@@ -150,7 +163,7 @@ export default {
             :return-object="true"
             append-inner-icon="mdi-magnify"
             @click:append-inner="getAddresses()"
-            @keydown.enter="getAddresses()"
+            @keydown.enter="address ? saveLocation() : getAddresses()"
           ></v-autocomplete>
 
           <v-row dense>
@@ -181,6 +194,17 @@ export default {
                           :disabled="true"
             ></v-text-field>
           </v-row>
+
+          <v-card-text>Op locatie</v-card-text>
+          <v-row dense>
+            <v-btn-group variant="outlined" divided>
+              <v-btn v-for="(key, val) in days"
+                     :key="val"
+                     :active="location.defaultDays.includes(key)"
+                     v-on:click="toggleDay(key)"
+              >{{ val }}</v-btn>
+            </v-btn-group>
+          </v-row>
         </v-card-text>
         <v-card-actions>
           <v-btn text="Annuleren" variant="plain" @click="open = false"></v-btn>
@@ -197,4 +221,10 @@ export default {
 </template>
 
 <style scoped>
+.v-btn-group {
+  width: 100%;
+  .v-btn {
+    width: 20%;
+  }
+}
 </style>
