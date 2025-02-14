@@ -51,7 +51,7 @@ export default {
         .map(day => this.locations!.find(loc => loc.id === day.location!)!)
         .filter(loc => loc && loc.id !== this.home!.id)
         .map(loc => loc.distance)
-        .reduce((sum, a) => sum + a, 0);
+        .reduce((sum, a) => sum! + a!, 0)!;
     },
     currency(num: any) {
       return '€ ' + parseFloat(num).toFixed(2);

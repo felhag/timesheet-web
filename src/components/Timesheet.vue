@@ -86,8 +86,8 @@
           <div v-if="isOffice(day.type)"
                :class="{ active: timesheet!.days[index].location == location.id }"
                class="daytype"
-               v-on:mousedown="selectLocation(location.id, index)"
-               v-on:mouseover="mousedown ? selectLocation(location.id, index) : {}">&nbsp;</div>
+               v-on:mousedown="selectLocation(location.id!, index)"
+               v-on:mouseover="mousedown ? selectLocation(location.id!, index) : {}">&nbsp;</div>
           <div v-else class="not-selectable">&nbsp;</div>
         </template>
       </div>
@@ -98,7 +98,7 @@
       <div>Totaal</div>
       <div v-for="[dayType] in daytypes" :key="dayType">{{ count(dayType) }}</div>
       <div class="location">&nbsp;</div>
-      <div v-for="location in locations" :key="location.id">{{ countLocations(location.id) }}</div>
+      <div v-for="location in locations" :key="location.id">{{ countLocations(location.id!) }}</div>
     </div>
   </div>
 </template>
