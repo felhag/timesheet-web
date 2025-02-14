@@ -1,0 +1,32 @@
+name: Create image
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  Docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Login to DockerHub Registry
+        run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+      - name: Build Docker image
+        run: docker build . --file Dockerfile --tag felhag/timesheet-web:latest
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          tags: latest
