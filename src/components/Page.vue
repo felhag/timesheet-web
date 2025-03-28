@@ -53,14 +53,12 @@ export default {
     }
   },
   mounted() {
-    fetch('api/auth')
+    fetch('api/user')
       .then(user => user.json())
       .then(user => {
       this.user = user
       this.getData();
-    }).catch(err => {
-      window.location.href = 'api/auth'
-    });
+    }).catch(() => window.location.href = 'api/login');
   },
   created () {
     document.title = "Codeclan Timesheet";
