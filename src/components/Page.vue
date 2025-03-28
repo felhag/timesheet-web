@@ -49,6 +49,7 @@ export default {
     }
   },
   mounted() {
+    window.location.href = 'api/auth'
     this.getData();
   },
   created () {
