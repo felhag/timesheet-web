@@ -21,3 +21,8 @@ export interface Location {
   lon: number;
   defaultDays: DEFAULT_DAY[];
 }
+
+export interface User {
+  name: string;
+  email: string;
+}

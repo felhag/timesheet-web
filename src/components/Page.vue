@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ConfiguredTimesheet, Location } from '@/model/model';
+import { ConfiguredTimesheet, Location, User } from '@/model/model';
 import Timesheet from '@/components/Timesheet.vue';
 import Result from '@/components/Result.vue';
 
@@ -8,6 +8,7 @@ export default {
   data() {
     return {
       page: 'configure' as 'configure' | 'result',
+      user: {} as User,
       locations: [] as Location[],
       timesheet: {
         days: [],
@@ -46,11 +47,20 @@ export default {
         },
         body: JSON.stringify(this.timesheet)
       }).then(() => this.page = 'result')
+    },
+    logout() {
+      fetch('api/logout', {method: 'POST'}).then(() => this.user = {name:'',email:''});
     }
   },
   mounted() {
-    window.location.href = 'api/auth'
-    this.getData();
+    fetch('api/auth')
+      .then(user => user.json())
+      .then(user => {
+      this.user = user
+      this.getData();
+    }).catch(err => {
+      window.location.href = 'api/auth'
+    });
   },
   created () {
     document.title = "Codeclan Timesheet";
@@ -71,6 +81,15 @@ export default {
         icon="mdi-chevron-right"
         variant="text"></v-btn>
   </h1>
+  <span class="name">
+    Ingelogd als {{ user.name }}
+
+    <v-btn
+      icon="mdi-logout"
+      title="Uitloggen"
+      variant="text"
+      v-on:click="logout()"></v-btn>
+  </span>
 
   <div v-if="page === 'configure'">
     <Timesheet :timesheet="timesheet"
@@ -89,6 +108,10 @@ export default {
 <style scoped>
   h1 {
     margin: 12px 0;
+    display: inline-block;
+  }
+  .name {
+    float: right;
   }
   .month-name {
     min-width: 250px;
